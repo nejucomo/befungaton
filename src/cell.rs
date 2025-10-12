@@ -1,35 +1,26 @@
-use crate::{CursorState, Direction, Glyph, GlyphStyle};
+use crate::Direction::{self, East, North, South, West};
 
 use self::Cell::*;
 
-/// A Cell is isomorphic to a unicode scalar value
-#[derive(Debug)]
+/// Every cell can be represented as a unicode scalar value
+#[derive(Copy, Clone, Debug, Default)]
 pub enum Cell {
-    Inert(char),
-    Cursor(CursorState),
+    #[default]
+    Noop,
+    Turn(Direction),
 }
 
-impl Default for Cell {
-    fn default() -> Self {
-        Inert(' ')
-    }
-}
+impl TryFrom<char> for Cell {
+    type Error = ();
 
-impl From<char> for Cell {
-    fn from(c: char) -> Self {
-        if let Ok(d) = Direction::try_from(c) {
-            Cursor(CursorState::new(d))
-        } else {
-            Inert(c)
-        }
-    }
-}
-
-impl Glyph for Cell {
-    fn glyph(&self, style: GlyphStyle) -> char {
-        match self {
-            Inert(c) => *c,
-            Cursor(st) => st.direction.glyph(style),
+    fn try_from(c: char) -> Result<Self, Self::Error> {
+        match c {
+            ' ' => Ok(Noop),
+            '^' => Ok(Turn(North)),
+            '>' => Ok(Turn(East)),
+            'v' => Ok(Turn(South)),
+            '<' => Ok(Turn(West)),
+            _ => Err(()),
         }
     }
 }
