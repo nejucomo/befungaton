@@ -1,9 +1,5 @@
-pub trait Glyph {
-    fn glyph(&self, style: GlyphStyle) -> char;
-}
+use crate::errors::InvalidChar;
 
-#[derive(Copy, Clone, Debug)]
-pub enum GlyphStyle {
-    Ascii,
-    Cute,
+pub trait Glyph: TryFrom<char, Error = InvalidChar> {
+    fn glyph(&self) -> char;
 }

@@ -1,4 +1,6 @@
-use crate::Direction::{self, East, North, South, West};
+use crate::Direction;
+use crate::Glyph;
+use crate::errors::InvalidChar;
 
 use self::Cell::*;
 
@@ -11,16 +13,21 @@ pub enum Cell {
 }
 
 impl TryFrom<char> for Cell {
-    type Error = ();
+    type Error = InvalidChar;
 
     fn try_from(c: char) -> Result<Self, Self::Error> {
         match c {
             ' ' => Ok(Noop),
-            '^' => Ok(Turn(North)),
-            '>' => Ok(Turn(East)),
-            'v' => Ok(Turn(South)),
-            '<' => Ok(Turn(West)),
-            _ => Err(()),
+            c => Direction::try_from(c).map(Turn),
+        }
+    }
+}
+
+impl Glyph for Cell {
+    fn glyph(&self) -> char {
+        match self {
+            Noop => ' ',
+            Turn(d) => d.glyph(),
         }
     }
 }

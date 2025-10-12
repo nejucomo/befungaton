@@ -1,4 +1,5 @@
-use crate::{Glyph, GlyphStyle};
+use crate::Glyph;
+use crate::errors::InvalidChar;
 
 use self::Direction::*;
 
@@ -11,36 +12,26 @@ pub enum Direction {
 }
 
 impl TryFrom<char> for Direction {
-    type Error = ();
+    type Error = InvalidChar;
 
     fn try_from(c: char) -> Result<Self, Self::Error> {
         match c {
-            '^' | '▲' => Ok(North),
-            'v' | '▼' => Ok(South),
-            '>' | '▶' => Ok(East),
-            '<' | '◀' => Ok(West),
-            _ => Err(()),
+            '^' => Ok(North),
+            'v' => Ok(South),
+            '>' => Ok(East),
+            '<' => Ok(West),
+            _ => Err(InvalidChar(c)),
         }
     }
 }
 
 impl Glyph for Direction {
-    fn glyph(&self, style: GlyphStyle) -> char {
-        use GlyphStyle::*;
-
-        match style {
-            Ascii => match *self {
-                North => '^',
-                South => 'v',
-                East => '>',
-                West => '<',
-            },
-            Cute => match *self {
-                North => '▲',
-                South => '▼',
-                East => '▶',
-                West => '◀',
-            },
+    fn glyph(&self) -> char {
+        match *self {
+            North => '^',
+            South => 'v',
+            East => '>',
+            West => '<',
         }
     }
 }

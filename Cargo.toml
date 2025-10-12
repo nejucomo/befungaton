@@ -5,5 +5,9 @@ edition = "2024"
 
 [dependencies]
 derive-new = "0.7.0"
-derive_more = { version = "2.0.1", features = ["constructor", "from", "into"] }
+derive_more = { version = "2.0.1", features = ["constructor", "deref", "from", "into"] }
 thiserror = "2.0.17"
+
+[dev-dependencies]
+indoc = "2.0.6"
+test-case = "3.3.1"
