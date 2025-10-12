@@ -5,7 +5,8 @@ use std::collections::BTreeMap;
 use std::fmt::Display;
 
 use crate::errors::SpaceFromStringError;
-use crate::{Cell, Glyph as _, Position, Span};
+use crate::geometry::{Position, Span};
+use crate::{Cell, Glyph as _};
 
 #[derive(Debug, Default)]
 pub struct Space {

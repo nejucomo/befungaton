@@ -1,6 +1,6 @@
-use crate::Direction;
 use crate::Glyph;
 use crate::errors::InvalidChar;
+use crate::geometry::Direction;
 
 use self::Cell::*;
 

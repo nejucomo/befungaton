@@ -1,4 +1,5 @@
-use crate::{Cell, Direction};
+use crate::Cell;
+use crate::geometry::Direction;
 
 use derive_new::new;
 

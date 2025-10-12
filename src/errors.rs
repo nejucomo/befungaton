@@ -1,4 +1,4 @@
-use crate::Position;
+use crate::geometry::Position;
 
 #[derive(Debug, thiserror::Error)]
 #[error("error at {0}: {1}")]
