@@ -22,9 +22,30 @@ impl IntoIterator for &Rect {
     type IntoIter = impl Iterator<Item = Position>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.cols
+        self.rows
             .into_iter()
-            .cartesian_product(&self.rows)
-            .map(|(c, r)| Position::new(c, r))
+            .cartesian_product(&self.cols)
+            .map(|(r, c)| Position::new(c, r))
     }
+}
+
+#[test]
+fn test_rect_iter_order() {
+    use crate::geometry::Span;
+
+    let r = Rect {
+        cols: Span::from(0..2),
+        rows: Span::from(0..2),
+    };
+
+    let actual: Vec<Position> = r.into_iter().collect();
+
+    let expected = vec![
+        Position::new(0, 0),
+        Position::new(1, 0),
+        Position::new(0, 1),
+        Position::new(1, 1),
+    ];
+
+    assert_eq!(actual, expected);
 }

@@ -1,5 +1,5 @@
 use crate::geometry::Direction;
-use crate::{Widget, Glyph};
+use crate::{Glyph, Widget};
 
 use derive_new::new;
 

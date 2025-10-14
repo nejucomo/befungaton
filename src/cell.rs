@@ -24,6 +24,10 @@ impl Cell {
     {
         object.insert_into(self)
     }
+
+    pub fn pop_cursor(&mut self) -> Option<Cursor> {
+        self.cursors.pop()
+    }
 }
 
 impl Glyph for Cell {

@@ -1,6 +1,6 @@
+use crate::Glyph;
 use crate::errors::InvalidChar;
 use crate::geometry::Direction;
-use crate::{Glyph, Physical};
 
 use self::Widget::*;
 
