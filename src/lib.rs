@@ -7,8 +7,10 @@ pub mod errors;
 pub mod geometry;
 mod glyph;
 mod space;
+mod widget;
 
-pub use self::cell::Cell;
+pub use self::cell::{Cell, Physical};
 pub use self::cursor::Cursor;
 pub use self::glyph::Glyph;
 pub use self::space::Space;
+pub use self::widget::Widget;

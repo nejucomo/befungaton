@@ -1,33 +1,36 @@
-use crate::Glyph;
-use crate::errors::InvalidChar;
-use crate::geometry::Direction;
+mod physical;
 
-use self::Cell::*;
+use derive_new::new;
 
-/// Every cell can be represented as a unicode scalar value
-#[derive(Copy, Clone, Debug, Default)]
-pub enum Cell {
-    #[default]
-    Noop,
-    Turn(Direction),
+use crate::{Cursor, Glyph, Widget};
+
+pub use self::physical::Physical;
+
+#[derive(Debug, Default, new)]
+pub struct Cell {
+    widget: Widget,
+    #[new(default)]
+    cursors: Vec<Cursor>,
 }
 
-impl TryFrom<char> for Cell {
-    type Error = InvalidChar;
+impl Cell {
+    pub fn is_empty(&self) -> bool {
+        matches!(self.widget, Widget::Noop) && self.cursors.is_empty()
+    }
 
-    fn try_from(c: char) -> Result<Self, Self::Error> {
-        match c {
-            ' ' => Ok(Noop),
-            c => Direction::try_from(c).map(Turn),
-        }
+    pub fn insert<P>(&mut self, object: P)
+    where
+        P: Physical,
+    {
+        object.insert_into(self)
     }
 }
 
 impl Glyph for Cell {
     fn glyph(&self) -> char {
-        match self {
-            Noop => ' ',
-            Turn(d) => d.glyph(),
-        }
+        self.cursors
+            .last()
+            .map(|c| c.glyph())
+            .unwrap_or(self.widget.glyph())
     }
 }

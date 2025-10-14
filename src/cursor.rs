@@ -1,5 +1,5 @@
 use crate::geometry::Direction;
-use crate::{Cell, Glyph};
+use crate::{Widget, Glyph};
 
 use derive_new::new;
 
@@ -7,7 +7,7 @@ use derive_new::new;
 pub struct Cursor {
     pub direction: Direction,
     #[new(default)]
-    pub stack: Vec<Cell>,
+    pub stack: Vec<Widget>,
 }
 
 impl Glyph for Cursor {
