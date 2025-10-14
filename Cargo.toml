@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 derive-new = "0.7.0"
 derive_more = { version = "2.0.1", features = ["constructor", "deref", "from", "into"] }
+itertools = "0.14.0"
 thiserror = "2.0.17"
 
 [dev-dependencies]

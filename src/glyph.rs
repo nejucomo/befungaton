@@ -1,5 +1,3 @@
-use crate::errors::InvalidChar;
-
-pub trait Glyph: TryFrom<char, Error = InvalidChar> {
+pub trait Glyph {
     fn glyph(&self) -> char;
 }

@@ -5,22 +5,22 @@ use std::collections::BTreeMap;
 use std::fmt::Display;
 
 use crate::errors::SpaceFromStringError;
-use crate::geometry::{Position, Span};
-use crate::{Cell, Glyph as _};
+use crate::geometry::{Position, Rect, Spanning as _};
+use crate::{Cell, Cursor, Glyph as _};
 
 #[derive(Debug, Default)]
 pub struct Space {
     /// Invariant: [Cell] is never stored as [Cell::Noop] because that's represented by absence
     cells: BTreeMap<Position, Cell>,
-    colspan: Span,
-    rowspan: Span,
+    #[allow(dead_code)]
+    cursors: Vec<Cursor>,
+    span: Rect,
 }
 
 impl Space {
     fn set(&mut self, pos: Position, cell: Cell) {
         if matches!(cell, Cell::Noop) {
-            self.colspan.extend_to_cover(pos.col);
-            self.rowspan.extend_to_cover(pos.row);
+            self.span.extend_to_cover(pos);
             self.cells.insert(pos, cell);
         }
     }
@@ -46,13 +46,9 @@ impl TryFrom<&str> for Space {
 
 impl Display for Space {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for col in &self.colspan {
-            for row in &self.rowspan {
-                let pos = Position::try_new(col, row).unwrap();
-                write!(f, "{}", self.cells[&pos].glyph())?;
-            }
+        for pos in &self.span {
+            write!(f, "{}", self.cells[&pos].glyph())?;
         }
-
         Ok(())
     }
 }

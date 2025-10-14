@@ -5,8 +5,12 @@ use derive_more::{Deref, From};
 #[derive(Debug, Default, Deref, From)]
 pub struct Span(Range<i32>);
 
-impl Span {
-    pub fn extend_to_cover(&mut self, sample: i32) {
+pub trait Spanning<T> {
+    fn extend_to_cover(&mut self, sample: T);
+}
+
+impl Spanning<i32> for Span {
+    fn extend_to_cover(&mut self, sample: i32) {
         use std::cmp::{max, min};
 
         let &Range { start, end } = &self.0;
