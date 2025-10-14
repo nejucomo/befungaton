@@ -3,11 +3,16 @@ use crate::errors::InvalidChar;
 
 use self::Direction::*;
 
+/// A cardinal [Direction] in space
 #[derive(Copy, Clone, Debug)]
 pub enum Direction {
+    /// [North] is the direction of decreasing rows
     North,
+    /// [South] is the direction of increasing rows
     South,
+    /// [East] is the direction of increasing columns
     East,
+    /// [West] is the direction of decreasing columns
     West,
 }
 

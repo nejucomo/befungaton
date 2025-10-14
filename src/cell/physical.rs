@@ -2,6 +2,7 @@ use crate::{Cell, Cursor, Widget};
 
 /// Values which can be stored in cells
 pub trait Physical {
+    /// Insert the physical item into the [Cell]
     fn insert_into(self, cell: &mut Cell);
 }
 

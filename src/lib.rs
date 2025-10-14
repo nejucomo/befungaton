@@ -1,5 +1,6 @@
-// #![feature(type_alias_impl_trait)]
+//! `befungaton` is a [befunge](https://esolangs.org/wiki/Befunge)-like interpreter
 #![feature(impl_trait_in_assoc_type)]
+#![deny(missing_docs, unsafe_code)]
 
 mod cell;
 mod cursor;

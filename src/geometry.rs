@@ -1,3 +1,4 @@
+//! Types involving positions, directions, and spans
 mod direction;
 mod position;
 mod rect;

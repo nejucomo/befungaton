@@ -4,11 +4,13 @@ use crate::geometry::Direction;
 
 use self::Widget::*;
 
-/// Every cell can be represented as a unicode scalar value
+/// An object which modifies a [Cursor] when stepped on
 #[derive(Copy, Clone, Debug, Default)]
 pub enum Widget {
+    /// `' '`: do nothing
     #[default]
     Noop,
+    /// `^ > v <`: turn in the given direction
     Turn(Direction),
 }
 

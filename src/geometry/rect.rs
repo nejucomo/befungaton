@@ -4,9 +4,12 @@ use itertools::Itertools as _;
 use crate::geometry::span::Spanning;
 use crate::geometry::{Position, Span};
 
+/// A column and row span
 #[derive(Debug, Default, new)]
 pub struct Rect {
+    /// The column [Span]
     pub cols: Span,
+    /// The row [Span]
     pub rows: Span,
 }
 

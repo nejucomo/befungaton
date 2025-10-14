@@ -9,6 +9,7 @@ use crate::errors::SpaceFromStringError;
 use crate::geometry::{Position, Rect, Spanning as _};
 use crate::{Cell, Cursor, Glyph as _, Physical, Widget};
 
+/// The full state space of an interpreter instance
 #[derive(Debug, Default)]
 pub struct Space {
     cells: BTreeMap<Position, Cell>,
@@ -16,6 +17,7 @@ pub struct Space {
 }
 
 impl Space {
+    /// Step each [Cursor], and then apply the effects of the new [Cursor] [Position]s
     pub fn step_cursors(&mut self) {
         let mut deltas = vec![];
 

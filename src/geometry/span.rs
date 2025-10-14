@@ -2,10 +2,13 @@ use std::ops::Range;
 
 use derive_more::{Deref, From};
 
+/// A range of values which can be extended to cover samples
 #[derive(Debug, Default, Deref, From)]
 pub struct Span(Range<i32>);
 
+/// Any type which can be extended to cover samples (e.g. [Span] or [Rect](crate::geometry::Rect)
 pub trait Spanning<T> {
+    /// Extend the [Spanning] value to cover `sample`
     fn extend_to_cover(&mut self, sample: T);
 }
 

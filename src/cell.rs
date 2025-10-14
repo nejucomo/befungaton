@@ -6,6 +6,7 @@ use crate::{Cursor, Glyph, Widget};
 
 pub use self::physical::Physical;
 
+/// A storage location which has a [Widget] and any number of [Cursor]s
 #[derive(Debug, Default, new)]
 pub struct Cell {
     widget: Widget,
@@ -14,10 +15,12 @@ pub struct Cell {
 }
 
 impl Cell {
+    /// A [Cell] is empty when the [Widget] is [Noop](Widget::Noop) and there are no [Cursor]s there
     pub fn is_empty(&self) -> bool {
         matches!(self.widget, Widget::Noop) && self.cursors.is_empty()
     }
 
+    /// Insert a physical value (either a [Widget] or [Cursor]) into this [Cell]
     pub fn insert<P>(&mut self, object: P)
     where
         P: Physical,
@@ -25,6 +28,7 @@ impl Cell {
         object.insert_into(self)
     }
 
+    /// Remove the top [Cursor] if any
     pub fn pop_cursor(&mut self) -> Option<Cursor> {
         self.cursors.pop()
     }
