@@ -8,12 +8,11 @@ use crate::errors::SpaceFromStringError;
 use crate::geometry::{Position, Rect, Spanning as _};
 use crate::{Cell, Cursor, Glyph as _};
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Space {
     /// Invariant: [Cell] is never stored as [Cell::Noop] because that's represented by absence
     cells: BTreeMap<Position, Cell>,
-    #[allow(dead_code)]
-    cursors: Vec<Cursor>,
+    cursors: BTreeMap<Position, Cursor>,
     span: Rect,
 }
 
@@ -23,6 +22,26 @@ impl Space {
             self.span.extend_to_cover(pos);
             self.cells.insert(pos, cell);
         }
+    }
+
+    fn add_cursor(&mut self, pos: Position, cursor: Cursor) {
+        self.span.extend_to_cover(pos);
+        self.cursors.insert(pos, cursor);
+    }
+}
+
+impl Default for Space {
+    fn default() -> Self {
+        use crate::geometry::Direction::East;
+
+        let mut s = Space {
+            cells: BTreeMap::default(),
+            cursors: BTreeMap::default(),
+            span: Rect::default(),
+        };
+
+        s.add_cursor(Position::new(0, 0), Cursor::new(East));
+        s
     }
 }
 
@@ -47,7 +66,12 @@ impl TryFrom<&str> for Space {
 impl Display for Space {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for pos in &self.span {
-            write!(f, "{}", self.cells[&pos].glyph())?;
+            self.cursors
+                .get(&pos)
+                .map(|c| c.glyph())
+                .or(self.cells.get(&pos).map(|c| c.glyph()))
+                .unwrap_or(' ')
+                .fmt(f)?;
         }
         Ok(())
     }

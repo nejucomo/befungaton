@@ -1,11 +1,10 @@
-use crate::geometry::{Direction, Position};
+use crate::geometry::Direction;
 use crate::{Cell, Glyph};
 
 use derive_new::new;
 
 #[derive(Debug, new)]
 pub struct Cursor {
-    pub position: Position,
     pub direction: Direction,
     #[new(default)]
     pub stack: Vec<Cell>,
