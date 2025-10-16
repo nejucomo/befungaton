@@ -13,11 +13,13 @@ use self::Widget::*;
 /// An object which modifies a [Cursor](crate::Cursor) when stepped on
 #[derive(Copy, Clone, Debug, Default)]
 pub enum Widget {
-    /// `' '`: do nothing
+    /// `' ' (space)` noop: do nothing
     #[default]
     Noop,
-    /// `:`: duplicate the top stack item
+    /// `:` dup: duplicate the top stack item
     Dup,
+    /// `;` swapn: pop n, swap top of stack with position n; if n >= 0, it is absolute stack index; if n < 0 it's added to stack length, so `0 1 - ;` swaps the top of the stack with itself, resulting in no change.
+    SwapN,
     /// `G`: turn counter-clockwise
     Ccw,
     /// `=`: if stack is empty, turn south; else pop, if nonzero turn north.
@@ -37,6 +39,7 @@ impl TryFrom<char> for Widget {
         match c {
             ' ' => Ok(Noop),
             ':' => Ok(Dup),
+            ';' => Ok(SwapN),
             'G' => Ok(Ccw),
             '=' => Ok(TurnIfZero),
             c => Err(InvalidChar(c))
@@ -52,6 +55,7 @@ impl Glyph for Widget {
         match self {
             Noop => ' ',
             Dup => ':',
+            SwapN => ';',
             Ccw => 'G',
             TurnIfZero => '=',
             Turn(d) => d.glyph(),

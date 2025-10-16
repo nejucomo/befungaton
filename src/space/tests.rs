@@ -327,6 +327,33 @@ use crate::geometry::Position;
     vec![1]
     ; "rem 5 2"
 )]
+#[test_case(
+    indoc! { r#"
+        23570;
+    "# },
+    [
+        indoc! { r#"
+            ▶3570;
+        "# },
+        indoc! { r#"
+            2▶570;
+        "# },
+        indoc! { r#"
+            23▶70;
+        "# },
+        indoc! { r#"
+            235▶0;
+        "# },
+        indoc! { r#"
+            2357▶;
+        "# },
+        indoc! { r#"
+            23570▶
+        "# },
+    ],
+    vec![7, 3, 5, 2]
+    ; "swapn"
+)]
 fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<i32>) {
     let mut space: Space = init.parse().unwrap();
     let mut lastpos = Position::new(0, 0);

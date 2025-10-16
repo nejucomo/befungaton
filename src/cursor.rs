@@ -19,7 +19,7 @@ impl Cursor {
     /// # Note
     ///
     /// This is called after a cursor moves onto a cell, but prior
-    /// to pushing `self` onto the [Cell]'s cursor stack.
+    /// to pushing `self` onto the [Cell](crate::Cell)'s cursor stack.
     pub fn execute(&mut self, widget: Widget) {
         use Direction::{North, South};
         use Widget::*;
@@ -29,6 +29,21 @@ impl Cursor {
             Dup => {
                 if let Some(&i) = self.stack.last() {
                     self.stack.push(i);
+                }
+            }
+            SwapN => {
+                if let Some(mut ix) = self.stack.pop() {
+                    let len = self.stack.len();
+
+                    if ix < 0 {
+                        ix += i32::try_from(len).unwrap();
+                    }
+
+                    let uix = usize::try_from(ix).unwrap();
+
+                    if uix < len {
+                        self.stack.swap(uix, len - 1);
+                    }
                 }
             }
             Ccw => {
