@@ -368,3 +368,25 @@ fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<
     let actual_stack = space.mut_cell(lastpos).unwrap().pop_cursor().unwrap().stack;
     assert_eq!(actual_stack, expected_stack);
 }
+
+#[test_case(
+    indoc! { r#"
+        19+:::**0;:3*:1;*7+++
+    "# },
+    20,
+    vec![1337]
+    ; "elite"
+)]
+fn check_final_stack(init: &str, steps: usize, expected: Vec<i32>) {
+    let mut space: Space = init.parse().unwrap();
+    let mut lastpos = Position::new(0, 0);
+
+    for _ in 0..steps {
+        let ps = space.step_cursors();
+        assert_eq!(ps.len(), 1);
+        lastpos = ps[0];
+    }
+
+    let actual = space.mut_cell(lastpos).unwrap().pop_cursor().unwrap().stack;
+    assert_eq!(actual, expected);
+}
