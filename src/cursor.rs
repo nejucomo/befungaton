@@ -49,6 +49,11 @@ impl Cursor {
             PushDigit(digit) => {
                 self.stack.push(i32::from(digit));
             }
+            CalcArith(op) => {
+                if let Some((b, a)) = self.stack.pop().zip(self.stack.pop()) {
+                    self.stack.push(op.calc(a, b));
+                }
+            }
         };
     }
 }

@@ -237,6 +237,96 @@ use crate::geometry::Position;
     vec![7, 7]
     ; "dup 7"
 )]
+#[test_case(
+    indoc! { r#"
+        23+
+    "# },
+    [
+        indoc! { r#"
+            ▶3+
+        "# },
+        indoc! { r#"
+            2▶+
+        "# },
+        indoc! { r#"
+            23▶
+        "# }
+    ],
+    vec![5]
+    ; "add 2 3"
+)]
+#[test_case(
+    indoc! { r#"
+        23-
+    "# },
+    [
+        indoc! { r#"
+            ▶3-
+        "# },
+        indoc! { r#"
+            2▶-
+        "# },
+        indoc! { r#"
+            23▶
+        "# }
+    ],
+    vec![-1]
+    ; "sub 2 3"
+)]
+#[test_case(
+    indoc! { r#"
+        23*
+    "# },
+    [
+        indoc! { r#"
+            ▶3*
+        "# },
+        indoc! { r#"
+            2▶*
+        "# },
+        indoc! { r#"
+            23▶
+        "# }
+    ],
+    vec![6]
+    ; "mul 2 3"
+)]
+#[test_case(
+    indoc! { r#"
+        52/
+    "# },
+    [
+        indoc! { r#"
+            ▶2/
+        "# },
+        indoc! { r#"
+            5▶/
+        "# },
+        indoc! { r#"
+            52▶
+        "# }
+    ],
+    vec![2]
+    ; "div 5 2"
+)]
+#[test_case(
+    indoc! { r#"
+        52%
+    "# },
+    [
+        indoc! { r#"
+            ▶2%
+        "# },
+        indoc! { r#"
+            5▶%
+        "# },
+        indoc! { r#"
+            52▶
+        "# }
+    ],
+    vec![1]
+    ; "rem 5 2"
+)]
 fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<i32>) {
     let mut space: Space = init.parse().unwrap();
     let mut lastpos = Position::new(0, 0);
