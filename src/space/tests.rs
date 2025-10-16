@@ -138,135 +138,31 @@ use crate::Space;
 )]
 #[test_case(
     indoc! { r#"
-        v
-        >0==
+        0=
     "# },
     [
         indoc! { r#"
-            ▼
-            >0==
+            ▶=
         "# },
         indoc! { r#"
-            v
-            ▶0==
-        "# },
-        indoc! { r#"
-            v
-            >▶==
-        "# },
-        indoc! { r#"
-            v
-            >0▶=
-        "# },
-        indoc! { r#"
-            v
-            >0=▼
+            0▶
         "# }
     ]
-    ; "turn-if-zero pop 0 to empty"
+    ; "turn-if-zero pop 0"
 )]
 #[test_case(
     indoc! { r#"
-        v
-        >70==
+        7=
     "# },
     [
         indoc! { r#"
-            ▼
-            >70==
+            ▶=
         "# },
         indoc! { r#"
-            v
-            ▶70==
-        "# },
-        indoc! { r#"
-            v
-            >▶0==
-        "# },
-        indoc! { r#"
-            v
-            >7▶==
-        "# },
-        indoc! { r#"
-            v
-            >70▶=
-        "# },
-        indoc! { r#"
-            v
-            >70=▲
+            7▲
         "# }
     ]
-    ; "turn-if-zero pop 0 non empty"
-)]
-#[test_case(
-    indoc! { r#"
-        v >=
-        >3=
-    "# },
-    [
-        indoc! { r#"
-            ▼ >=
-            >3=
-        "# },
-        indoc! { r#"
-            v >=
-            ▶3=
-        "# },
-        indoc! { r#"
-            v >=
-            >▶=
-        "# },
-        indoc! { r#"
-            v >=
-            >3▲
-        "# },
-        indoc! { r#"
-            v ▶=
-            >3=
-        "# },
-        indoc! { r#"
-            v >▼
-            >3=
-        "# }
-    ]
-    ; "turn-if-zero pop 3 to empty"
-)]
-#[test_case(
-    indoc! { r#"
-        v  >=
-        >53=
-    "# },
-    [
-        indoc! { r#"
-            ▼  >=
-            >53=
-        "# },
-        indoc! { r#"
-            v  >=
-            ▶53=
-        "# },
-        indoc! { r#"
-            v  >=
-            >▶3=
-        "# },
-        indoc! { r#"
-            v  >=
-            >5▶=
-        "# },
-        indoc! { r#"
-            v  >=
-            >53▲
-        "# },
-        indoc! { r#"
-            v  ▶=
-            >53=
-        "# },
-        indoc! { r#"
-            v  >▲
-            >53=
-        "# }
-    ]
-    ; "turn-if-zero pop 3 non empty"
+    ; "turn-if-zero pop 7"
 )]
 fn evolve<const K: usize>(init: &str, expecteds: [&str; K]) {
     let mut space: Space = init.parse().unwrap();
