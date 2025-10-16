@@ -18,19 +18,22 @@ pub struct Space {
 
 impl Space {
     /// Step each [Cursor], and then apply the effects of the new [Cursor] [Position]s
-    pub fn step_cursors(&mut self) {
-        let mut deltas = vec![];
+    pub fn step_cursors(&mut self) -> Vec<Position> {
+        let mut ps = vec![];
+        let mut cursors = vec![];
 
         for (&pos, mutcell) in self.cells.iter_mut() {
             while let Some(cursor) = mutcell.pop_cursor() {
-                let newpos = pos + cursor.direction;
-                deltas.push((newpos, cursor));
+                ps.push(pos + cursor.direction);
+                cursors.push(cursor);
             }
         }
 
-        for (pos, cursor) in deltas {
+        for (&pos, cursor) in ps.iter().zip(cursors) {
             self.insert(pos, cursor);
         }
+
+        ps
     }
 
     fn insert<P, O>(&mut self, pos: P, object: O)
@@ -48,6 +51,15 @@ impl Space {
         Position: From<P>,
     {
         self.cells.get(&Position::from(pos)).unwrap_or(DEFAULT_CELL)
+    }
+
+    /// Get a mutable reference to the cell, if present
+    #[cfg(test)]
+    pub fn mut_cell<P>(&mut self, pos: P) -> Option<&mut Cell>
+    where
+        Position: From<P>,
+    {
+        self.cells.get_mut(&Position::from(pos))
     }
 }
 
