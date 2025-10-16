@@ -47,9 +47,7 @@ impl Space {
     where
         Position: From<P>,
     {
-        self.cells
-            .get(&Position::from(pos))
-            .unwrap_or(&DEFAULT_CELL)
+        self.cells.get(&Position::from(pos)).unwrap_or(DEFAULT_CELL)
     }
 }
 
