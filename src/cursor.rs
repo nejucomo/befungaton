@@ -26,6 +26,11 @@ impl Cursor {
 
         match widget {
             Noop => {}
+            Dup => {
+                if let Some(&i) = self.stack.last() {
+                    self.stack.push(i);
+                }
+            }
             Ccw => {
                 self.direction = self.direction.counterclockwise();
             }

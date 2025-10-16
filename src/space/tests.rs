@@ -210,6 +210,33 @@ use crate::geometry::Position;
     (0..10).collect()
     ; "push all digits"
 )]
+#[test_case(
+    indoc! { r#"
+        :
+    "# },
+    [
+        indoc! { r#"
+            ▶
+        "# }
+    ],
+    vec![]
+    ; "dup empty stack"
+)]
+#[test_case(
+    indoc! { r#"
+        7:
+    "# },
+    [
+        indoc! { r#"
+            ▶:
+        "# },
+        indoc! { r#"
+            7▶
+        "# },
+    ],
+    vec![7, 7]
+    ; "dup 7"
+)]
 fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<i32>) {
     let mut space: Space = init.parse().unwrap();
     let mut lastpos = Position::new(0, 0);

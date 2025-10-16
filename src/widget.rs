@@ -14,6 +14,8 @@ pub enum Widget {
     /// `' '`: do nothing
     #[default]
     Noop,
+    /// `:`: duplicate the top stack item
+    Dup,
     /// `G`: turn counter-clockwise
     Ccw,
     /// `=`: if stack is empty, turn south; else pop, if nonzero turn north.
@@ -30,6 +32,7 @@ impl TryFrom<char> for Widget {
     fn try_from(c: char) -> Result<Self, Self::Error> {
         match c {
             ' ' => Ok(Noop),
+            ':' => Ok(Dup),
             'G' => Ok(Ccw),
             '=' => Ok(TurnIfZero),
             c => Digit::try_from(c)
@@ -43,6 +46,7 @@ impl Glyph for Widget {
     fn glyph(&self) -> char {
         match self {
             Noop => ' ',
+            Dup => ':',
             Ccw => 'G',
             TurnIfZero => '=',
             Turn(d) => d.glyph(),
