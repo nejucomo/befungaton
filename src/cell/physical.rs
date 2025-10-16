@@ -14,15 +14,7 @@ impl Physical for Widget {
 
 impl Physical for Cursor {
     fn insert_into(mut self, cell: &mut Cell) {
-        use Widget::*;
-
-        match cell.widget {
-            Noop => {}
-            Turn(d) => {
-                self.direction = d;
-            }
-        };
-
+        self.execute(cell.widget);
         cell.cursors.push(self);
     }
 }

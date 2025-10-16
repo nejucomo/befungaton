@@ -10,7 +10,7 @@ mod glyph;
 mod space;
 mod widget;
 
-pub use self::cell::{Cell, Physical};
+pub use self::cell::{Cell, DEFAULT_CELL, Physical};
 pub use self::cursor::Cursor;
 pub use self::glyph::Glyph;
 pub use self::space::Space;

@@ -7,7 +7,7 @@ use std::str::FromStr;
 
 use crate::errors::SpaceFromStringError;
 use crate::geometry::{Position, Rect, Spanning as _};
-use crate::{Cell, Cursor, Glyph as _, Physical, Widget};
+use crate::{Cell, Cursor, DEFAULT_CELL, Glyph as _, Physical, Widget};
 
 /// The full state space of an interpreter instance
 #[derive(Debug, Default)]
@@ -33,12 +33,23 @@ impl Space {
         }
     }
 
-    fn insert<P>(&mut self, pos: Position, object: P)
+    fn insert<P, O>(&mut self, pos: P, object: O)
     where
-        P: Physical,
+        Position: From<P>,
+        O: Physical,
     {
+        let pos = Position::from(pos);
         self.cells.entry(pos).or_default().insert(object);
         self.span.extend_to_cover(pos);
+    }
+
+    fn get_cell<P>(&self, pos: P) -> &Cell
+    where
+        Position: From<P>,
+    {
+        self.cells
+            .get(&Position::from(pos))
+            .unwrap_or(&DEFAULT_CELL)
     }
 }
 
@@ -52,13 +63,13 @@ impl TryFrom<&str> for Space {
 
         for (row, rowtext) in s.split('\n').enumerate() {
             for (col, c) in rowtext.chars().enumerate() {
-                let pos = Position::try_new(col, row).unwrap();
+                let pos = Position::new_conv(col, row);
                 let widget = Widget::try_from(c).map_err(|ic| SpaceFromStringError(pos, ic))?;
                 space.insert(pos, widget);
             }
         }
 
-        space.insert(Position::new(0, 0), Cursor::new(East));
+        space.insert((0, 0), Cursor::new(East));
 
         Ok(space)
     }
@@ -74,22 +85,13 @@ impl FromStr for Space {
 
 impl Display for Space {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut lastrow = self.span.rows.start;
-
-        for pos in &self.span {
-            if lastrow != pos.row {
-                // New line:
-                writeln!(f)?;
+        for row in &self.span.rows {
+            let mut line = "".to_string();
+            for col in &self.span.cols {
+                line.push(self.get_cell((col, row)).glyph());
             }
-            lastrow = pos.row;
-
-            self.cells
-                .get(&pos)
-                .map(|c| c.glyph())
-                .unwrap_or(' ')
-                .fmt(f)?;
+            writeln!(f, "{}", line.trim_end())?;
         }
-        writeln!(f)?;
 
         Ok(())
     }

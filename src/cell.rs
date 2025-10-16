@@ -6,6 +6,12 @@ use crate::{Cursor, Glyph, Widget};
 
 pub use self::physical::Physical;
 
+/// A reference to a read-only default [Cell] value
+pub const DEFAULT_CELL: &Cell = &Cell {
+    widget: Widget::Noop,
+    cursors: vec![],
+};
+
 /// A storage location which has a [Widget] and any number of [Cursor]s
 #[derive(Debug, Default, new)]
 pub struct Cell {

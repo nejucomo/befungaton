@@ -1,7 +1,6 @@
 use derive_new::new;
 
-use std::fmt::Display;
-use std::num::TryFromIntError;
+use std::fmt::{Debug, Display};
 use std::ops::Add;
 
 use crate::geometry::Direction;
@@ -27,15 +26,16 @@ impl Position {
     /// Panics if there are integer conversion overflows
     pub fn new_conv<I>(col: I, row: I) -> Self
     where
-        i32: TryFrom<I, Error = TryFromIntError>,
+        i32: TryFrom<I>,
+        <i32 as TryFrom<I>>::Error: Debug,
     {
         Self::try_new(col, row).unwrap()
     }
 
     /// Attempt to construct a [Position], returning an error on overflows
-    pub fn try_new<I>(col: I, row: I) -> Result<Self, TryFromIntError>
+    pub fn try_new<I>(col: I, row: I) -> Result<Self, <i32 as TryFrom<I>>::Error>
     where
-        i32: TryFrom<I, Error = TryFromIntError>,
+        i32: TryFrom<I>,
     {
         Ok(Position {
             col: i32::try_from(col)?,
@@ -46,7 +46,8 @@ impl Position {
 
 impl<I> From<(I, I)> for Position
 where
-    i32: TryFrom<I, Error = TryFromIntError>,
+    i32: TryFrom<I>,
+    <i32 as TryFrom<I>>::Error: Debug,
 {
     fn from((col, row): (I, I)) -> Self {
         Self::new_conv(col, row)

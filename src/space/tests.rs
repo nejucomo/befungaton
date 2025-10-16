@@ -61,6 +61,66 @@ use crate::Space;
     ]
     ; "spin wider"
 )]
+#[test_case(
+    indoc! { r#"
+         v
+        >G<
+         ^
+    "# },
+    [
+        indoc! { r#"
+            ▶v
+            >G<
+             ^
+        "# },
+        indoc! { r#"
+             ▼
+            >G<
+             ^
+        "# },
+        indoc! { r#"
+             v
+            >▶<
+             ^
+        "# },
+        indoc! { r#"
+             v
+            >G◀
+             ^
+        "# },
+        indoc! { r#"
+             v
+            >▼<
+             ^
+        "# },
+        indoc! { r#"
+             v
+            >G<
+             ▲
+        "# },
+        indoc! { r#"
+             v
+            >◀<
+             ^
+        "# },
+        indoc! { r#"
+             v
+            ▶G<
+             ^
+        "# },
+        indoc! { r#"
+             v
+            >▲<
+             ^
+        "# },
+        indoc! { r#"
+             ▼
+            >G<
+             ^
+        "# }
+    ]
+    ; "ccw dance"
+)]
 fn evolve<const K: usize>(init: &str, expecteds: [&str; K]) {
     let mut space: Space = init.parse().unwrap();
 

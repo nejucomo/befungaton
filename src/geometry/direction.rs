@@ -16,6 +16,18 @@ pub enum Direction {
     West,
 }
 
+impl Direction {
+    /// The direction from turning counterclockwise
+    pub fn counterclockwise(self) -> Direction {
+        match self {
+            North => West,
+            West => South,
+            South => East,
+            East => North,
+        }
+    }
+}
+
 impl TryFrom<char> for Direction {
     type Error = InvalidChar;
 
