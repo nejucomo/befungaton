@@ -3,6 +3,7 @@
 #![deny(missing_docs, unsafe_code)]
 
 mod cell;
+pub mod cli;
 mod cursor;
 pub mod errors;
 pub mod geometry;
