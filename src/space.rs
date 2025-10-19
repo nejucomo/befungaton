@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
-use crate::errors::SpaceFromStringError;
+use crate::errors::{IOParseError, ParseError};
 use crate::geometry::{Position, Rect, Spanning as _};
 use crate::{Cell, Cursor, DEFAULT_CELL, Glyph as _, Physical, Widget};
 
@@ -63,8 +63,46 @@ impl Space {
     }
 }
 
+impl TryFrom<std::path::PathBuf> for Space {
+    type Error = IOParseError;
+
+    fn try_from(path: std::path::PathBuf) -> Result<Self, Self::Error> {
+        Self::try_from(path.as_path())
+    }
+}
+
+impl TryFrom<&std::path::Path> for Space {
+    type Error = IOParseError;
+
+    fn try_from(path: &std::path::Path) -> Result<Self, Self::Error> {
+        let f = std::fs::File::open(path)?;
+        Self::try_from(f)
+    }
+}
+
+impl TryFrom<std::fs::File> for Space {
+    type Error = IOParseError;
+
+    fn try_from(mut f: std::fs::File) -> Result<Self, Self::Error> {
+        use std::io::Read as _;
+
+        let mut src = String::new();
+        f.read_to_string(&mut src)?;
+        let sp = Self::try_from(src)?;
+        Ok(sp)
+    }
+}
+
+impl TryFrom<String> for Space {
+    type Error = ParseError;
+
+    fn try_from(s: String) -> Result<Self, Self::Error> {
+        Self::try_from(s.as_str())
+    }
+}
+
 impl TryFrom<&str> for Space {
-    type Error = SpaceFromStringError;
+    type Error = ParseError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
         use crate::geometry::Direction::East;
@@ -74,7 +112,7 @@ impl TryFrom<&str> for Space {
         for (row, rowtext) in s.split('\n').enumerate() {
             for (col, c) in rowtext.chars().enumerate() {
                 let pos = Position::new_conv(col, row);
-                let widget = Widget::try_from(c).map_err(|ic| SpaceFromStringError(pos, ic))?;
+                let widget = Widget::try_from(c).map_err(|ic| ParseError(pos, ic))?;
                 space.insert(pos, widget);
             }
         }
@@ -86,7 +124,7 @@ impl TryFrom<&str> for Space {
 }
 
 impl FromStr for Space {
-    type Err = SpaceFromStringError;
+    type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Self::try_from(s)

@@ -2,9 +2,10 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use miette::Result;
+use miette::{IntoDiagnostic as _, Result};
 
 use crate::Space;
+use crate::errors::IOParseError;
 
 /// befungaton - a befunge-like interpreter
 #[derive(Debug, Parser)]
@@ -17,8 +18,11 @@ struct Options {
 /// Run the curses interpreter
 pub fn run() -> Result<()> {
     miette::set_panic_hook();
+    run_inner().into_diagnostic()
+}
+
+fn run_inner() -> Result<(), IOParseError> {
     let opts = Options::parse();
-    let source = std::fs::read_to_string(opts.source).unwrap();
-    let _space: Space = source.parse().unwrap();
+    let _space = Space::try_from(opts.source)?;
     todo!();
 }
