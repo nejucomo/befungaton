@@ -1,6 +1,6 @@
-use std::io::Write as _;
+use std::io::{Result, Stdout, Write as _, stdout};
 
-use crossterm::{QueueableCommand as _, terminal};
+use crossterm::{cursor, style, terminal};
 
 use crate::Space;
 use crate::errors::IOParseError;
@@ -9,21 +9,21 @@ use crate::errors::IOParseError;
 #[derive(Debug)]
 pub struct Tui {
     space: Space,
-    stdout: std::io::Stdout,
+    stdout: Stdout,
 }
 
 impl Default for Tui {
     fn default() -> Self {
         Self {
             space: Space::default(),
-            stdout: std::io::stdout(),
+            stdout: stdout(),
         }
     }
 }
 
 impl Tui {
     /// Load the given path into the [Space]
-    pub fn load<P>(&mut self, path: P) -> Result<(), IOParseError>
+    pub fn load<P>(&mut self, path: P) -> std::result::Result<(), IOParseError>
     where
         P: AsRef<std::path::Path>,
     {
@@ -32,24 +32,56 @@ impl Tui {
     }
 
     /// Take control of the terminal and launch the UI.
-    pub fn ui_loop(self) -> std::io::Result<()> {
+    pub fn ui_loop(self) -> Result<()> {
         in_raw_mode(|| self.raw_ui_loop())
     }
 
-    fn raw_ui_loop(mut self) -> std::io::Result<()> {
-        self.stdout
-            .queue(terminal::Clear(terminal::ClearType::All))?;
-
+    fn raw_ui_loop(mut self) -> Result<()> {
+        self.redraw()?;
         self.stdout.flush()?;
 
-        std::thread::sleep(std::time::Duration::from_millis(400));
+        std::thread::sleep(std::time::Duration::from_millis(3000));
+        Ok(())
+    }
+
+    fn redraw(&mut self) -> Result<()> {
+        // ╒╕╘╛│═
+        let (cols, rows) = terminal::size()?;
+
+        crossterm::queue!(
+            self.stdout,
+            terminal::Clear(terminal::ClearType::All),
+            style::SetBackgroundColor(style::Color::Black),
+            style::SetForegroundColor(style::Color::DarkGrey),
+            cursor::MoveTo(0, 0),
+            style::Print("╒"),
+            cursor::MoveTo(cols - 1, 0),
+            style::Print("╕"),
+            cursor::MoveTo(0, rows - 1),
+            style::Print("╘"),
+            cursor::MoveTo(cols - 1, rows - 1),
+            style::Print("╛"),
+        )?;
+
+        for row in [0, rows - 1] {
+            for col in 1..cols - 1 {
+                crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("═"))?;
+            }
+        }
+
+        for row in 1..rows - 1 {
+            for col in [0, cols - 1] {
+                crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("│"))?;
+            }
+        }
+
         Ok(())
     }
 }
 
-fn in_raw_mode<F>(f: F) -> std::io::Result<()>
+fn in_raw_mode<F>(f: F) -> Result<()>
 where
-    F: FnOnce() -> std::io::Result<()>,
+    F: FnOnce() -> Result<()>,
 {
     terminal::enable_raw_mode()?;
     let res = f();
