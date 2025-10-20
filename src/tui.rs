@@ -46,16 +46,23 @@ impl Tui {
 
     fn redraw(&mut self) -> Result<()> {
         // ╒╕╘╛│═
+        const TITLE: &str = "🤖BEFUNGATON🤖";
+        const TITLE_LEN: u16 = 12; // Character count
+
         let (cols, rows) = terminal::size()?;
 
         crossterm::queue!(
             self.stdout,
             terminal::Clear(terminal::ClearType::All),
             style::SetBackgroundColor(style::Color::Black),
+            style::SetForegroundColor(style::Color::Magenta),
+            cursor::MoveTo((cols - TITLE_LEN) / 2, 0),
+            style::Print(TITLE),
+            style::SetBackgroundColor(style::Color::Black),
             style::SetForegroundColor(style::Color::DarkGrey),
-            cursor::MoveTo(0, 0),
+            cursor::MoveTo(0, 1),
             style::Print("╒"),
-            cursor::MoveTo(cols - 1, 0),
+            cursor::MoveTo(cols - 1, 1),
             style::Print("╕"),
             cursor::MoveTo(0, rows - 1),
             style::Print("╘"),
@@ -63,13 +70,13 @@ impl Tui {
             style::Print("╛"),
         )?;
 
-        for row in [0, rows - 1] {
+        for row in [1, rows - 1] {
             for col in 1..cols - 1 {
                 crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("═"))?;
             }
         }
 
-        for row in 1..rows - 1 {
+        for row in 2..rows - 1 {
             for col in [0, cols - 1] {
                 crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("│"))?;
             }
