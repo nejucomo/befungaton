@@ -6,7 +6,7 @@ use std::ops::Add;
 use crate::geometry::Direction;
 
 /// A [Position] within a [Space](crate::Space)
-#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, new)]
+#[derive(Copy, Clone, Default, Debug, PartialEq, Eq, PartialOrd, Ord, new)]
 pub struct Position {
     /// The column
     pub col: i32,

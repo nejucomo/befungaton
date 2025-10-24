@@ -6,7 +6,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 use crate::errors::{IOParseError, ParseError};
-use crate::geometry::{Position, Rect, Spanning as _};
+use crate::geometry::{Position, Rect};
 use crate::{Cell, Cursor, DEFAULT_CELL, Glyph as _, Physical, Widget};
 
 /// The full state space of an interpreter instance
@@ -133,9 +133,9 @@ impl FromStr for Space {
 
 impl Display for Space {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in &self.span.rows {
+        for row in self.span.rows() {
             let mut line = "".to_string();
-            for col in &self.span.cols {
+            for col in self.span.cols() {
                 line.push(self.get_cell((col, row)).glyph());
             }
             writeln!(f, "{}", line.trim_end())?;
