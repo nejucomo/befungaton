@@ -13,7 +13,7 @@ use crate::{Cell, Cursor, DEFAULT_CELL, Glyph as _, Physical, Widget};
 #[derive(Debug, Default)]
 pub struct Space {
     cells: BTreeMap<Position, Cell>,
-    span: Rect,
+    rect: Rect,
 }
 
 impl Space {
@@ -39,11 +39,13 @@ impl Space {
     fn insert<P, O>(&mut self, pos: P, object: O)
     where
         Position: From<P>,
-        O: Physical,
+        O: Physical + std::fmt::Debug,
     {
         let pos = Position::from(pos);
+        dbg!(&object);
         self.cells.entry(pos).or_default().insert(object);
-        self.span.extend_to_cover(pos);
+        dbg!(&self.cells);
+        self.rect.extend_to_cover(pos);
     }
 
     fn get_cell<P>(&self, pos: P) -> &Cell
@@ -133,10 +135,12 @@ impl FromStr for Space {
 
 impl Display for Space {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for row in self.span.rows() {
+        for row in self.rect.rows() {
             let mut line = "".to_string();
-            for col in self.span.cols() {
-                line.push(self.get_cell((col, row)).glyph());
+            for col in self.rect.cols() {
+                dbg!(col, row);
+                line.push(dbg!(self.get_cell((col, row))).glyph());
+                dbg!(&line);
             }
             writeln!(f, "{}", line.trim_end())?;
         }

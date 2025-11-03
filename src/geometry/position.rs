@@ -1,12 +1,12 @@
 use derive_new::new;
 
 use std::fmt::{Debug, Display};
-use std::ops::Add;
+use std::ops::{Add, Div, Neg, Sub};
 
-use crate::geometry::Direction;
+use crate::geometry::Spanner;
 
 /// A [Position] within a [Space](crate::Space)
-#[derive(Copy, Clone, Default, Debug, PartialEq, Eq, PartialOrd, Ord, new)]
+#[derive(Copy, Clone, Default, Debug, PartialEq, Eq, new)]
 pub struct Position {
     /// The column
     pub col: i32,
@@ -42,6 +42,10 @@ impl Position {
             row: i32::try_from(row)?,
         })
     }
+
+    fn area(self) -> i64 {
+        (i64::from(self.col) * i64::from(self.row)).abs()
+    }
 }
 
 impl<I> From<(I, I)> for Position
@@ -54,22 +58,74 @@ where
     }
 }
 
-impl Add<Direction> for Position {
+impl<I> TryFrom<Position> for (I, I)
+where
+    I: TryFrom<i32>,
+{
+    type Error = <I as TryFrom<i32>>::Error;
+
+    fn try_from(pos: Position) -> Result<Self, Self::Error> {
+        let col = I::try_from(pos.col)?;
+        let row = I::try_from(pos.row)?;
+        Ok((col, row))
+    }
+}
+
+impl Spanner for Position {
+    fn one() -> Self {
+        Position::new(1, 1)
+    }
+}
+
+impl Ord for Position {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.area().cmp(&other.area())
+    }
+}
+
+impl PartialOrd for Position {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Add for Position {
     type Output = Position;
 
-    fn add(self, d: Direction) -> Self::Output {
-        use Direction::*;
-
-        let (dcol, drow) = match d {
-            North => (0, -1),
-            South => (0, 1),
-            East => (1, 0),
-            West => (-1, 0),
-        };
-
+    fn add(self, rhs: Self) -> Self::Output {
         Position {
-            col: self.col + dcol,
-            row: self.row + drow,
+            col: self.col + rhs.col,
+            row: self.row + rhs.row,
+        }
+    }
+}
+
+impl Neg for Position {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Position {
+            col: -self.col,
+            row: -self.row,
+        }
+    }
+}
+
+impl Sub for Position {
+    type Output = Position;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        self + (-rhs)
+    }
+}
+
+impl Div<i32> for Position {
+    type Output = Position;
+
+    fn div(self, rhs: i32) -> Self::Output {
+        Position {
+            col: self.col / rhs,
+            row: self.row / rhs,
         }
     }
 }

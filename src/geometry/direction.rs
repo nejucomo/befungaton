@@ -1,5 +1,8 @@
+use std::ops::Add;
+
 use crate::Glyph;
 use crate::errors::InvalidChar;
+use crate::geometry::Position;
 
 use self::Direction::*;
 
@@ -50,5 +53,18 @@ impl Glyph for Direction {
             East => '>',
             West => '<',
         }
+    }
+}
+
+impl Add<Direction> for Position {
+    type Output = Position;
+
+    fn add(self, d: Direction) -> Self::Output {
+        self + Position::from(match d {
+            North => (0, -1),
+            South => (0, 1),
+            East => (1, 0),
+            West => (-1, 0),
+        })
     }
 }

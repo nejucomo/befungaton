@@ -358,6 +358,12 @@ fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<
     let mut space: Space = init.parse().unwrap();
     let mut lastpos = Position::new(0, 0);
 
+    assert_eq!(
+        &space.to_string(),
+        init,
+        "Space::from_str(s).to_string() != s"
+    );
+
     for expected in expecteds {
         assert_eq!(&space.to_string(), expected);
         let ps = space.step_cursors();
