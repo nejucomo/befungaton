@@ -3,10 +3,8 @@ use derive_new::new;
 use std::fmt::{Debug, Display};
 use std::ops::{Add, Div, Neg, Sub};
 
-use crate::geometry::Spanner;
-
 /// A [Position] within a [Space](crate::Space)
-#[derive(Copy, Clone, Default, Debug, PartialEq, Eq, new)]
+#[derive(Copy, Clone, Default, Debug, PartialEq, Eq, PartialOrd, Ord, new)]
 pub struct Position {
     /// The column
     pub col: i32,
@@ -15,6 +13,11 @@ pub struct Position {
 }
 
 impl Position {
+    /// The position at (1, 1)
+    pub fn one_one() -> Self {
+        Position::new(1, 1)
+    }
+
     /// Construct a new [Position]
     ///
     /// # Note
@@ -43,8 +46,18 @@ impl Position {
         })
     }
 
-    fn area(self) -> i64 {
-        (i64::from(self.col) * i64::from(self.row)).abs()
+    /// Return either `self` or `other`, whichever is more towards the bottom and/or right
+    pub fn more_bottom_right(self, other: Position) -> Position {
+        use std::cmp::max;
+
+        Position::new(max(self.col, other.col), max(self.row, other.row))
+    }
+
+    /// Return either `self` or `other`, whichever is more towards the top and/or left
+    pub fn more_top_left(self, other: Position) -> Position {
+        use std::cmp::min;
+
+        Position::new(min(self.col, other.col), min(self.row, other.row))
     }
 }
 
@@ -68,24 +81,6 @@ where
         let col = I::try_from(pos.col)?;
         let row = I::try_from(pos.row)?;
         Ok((col, row))
-    }
-}
-
-impl Spanner for Position {
-    fn one() -> Self {
-        Position::new(1, 1)
-    }
-}
-
-impl Ord for Position {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.area().cmp(&other.area())
-    }
-}
-
-impl PartialOrd for Position {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
     }
 }
 

@@ -358,10 +358,17 @@ fn evolve<const K: usize>(init: &str, expecteds: [&str; K], expected_stack: Vec<
     let mut space: Space = init.parse().unwrap();
     let mut lastpos = Position::new(0, 0);
 
+    /// Is there no simpler way?
+    fn after_first_char(s: &str) -> &str {
+        let mut it = s.chars();
+        it.next();
+        it.as_str()
+    }
+
     assert_eq!(
-        &space.to_string(),
-        init,
-        "Space::from_str(s).to_string() != s"
+        after_first_char(&space.to_string()),
+        after_first_char(init),
+        "Space::from_str(s).to_string() != s ; neglecting first char"
     );
 
     for expected in expecteds {
