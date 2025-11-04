@@ -1,9 +1,14 @@
+mod event;
+
 use std::io::{Result, Stdout, Write as _, stdout};
 
+use crossterm::event::KeyEvent;
 use crossterm::{cursor, style, terminal};
 
 use crate::Space;
 use crate::errors::IOParseError;
+
+use self::event::Event;
 
 /// A Terminal User Interface
 #[derive(Debug)]
@@ -40,8 +45,65 @@ impl Tui {
         self.redraw()?;
         self.stdout.flush()?;
 
-        std::thread::sleep(std::time::Duration::from_millis(3000));
+        for evres in event::iterator() {
+            let ev = evres?;
+            self.handle_event(ev)?;
+            self.stdout.flush()?;
+        }
         Ok(())
+    }
+
+    fn handle_event(&mut self, event: Event) -> Result<()> {
+        use Event::*;
+        use crossterm::event::Event::*;
+
+        match event {
+            Tick => Err(std::io::Error::other("todo")),
+            // Crossterm(FocusGained) => Err(std::io::Error::other("todo")),
+            // Crossterm(FocusLost) => Err(std::io::Error::other("todo")),
+            Crossterm(Key(key_event)) => self.handle_key(key_event),
+            // Crossterm(Mouse(mouse_event)) => Err(std::io::Error::other("todo")),
+            // Crossterm(Paste(_)) => Err(std::io::Error::other("todo")),
+            // Crossterm(Resize(_, _)) => self.redraw(),
+            Crossterm(other) => Err(std::io::Error::other(format!("handle {other:?}"))),
+        }
+    }
+
+    fn handle_key(&mut self, keyev: KeyEvent) -> Result<()> {
+        use crossterm::event::KeyCode::*;
+
+        match keyev.code {
+            // Backspace => Err(std::io::Error::other("todo")),
+            // Enter => Err(std::io::Error::other("todo")),
+            // Left => Err(std::io::Error::other("todo")),
+            // Right => Err(std::io::Error::other("todo")),
+            // Up => Err(std::io::Error::other("todo")),
+            // Down => Err(std::io::Error::other("todo")),
+            // Home => Err(std::io::Error::other("todo")),
+            // End => Err(std::io::Error::other("todo")),
+            // PageUp => Err(std::io::Error::other("todo")),
+            // PageDown => Err(std::io::Error::other("todo")),
+            // Tab => Err(std::io::Error::other("todo")),
+            // BackTab => Err(std::io::Error::other("todo")),
+            // Delete => Err(std::io::Error::other("todo")),
+            // Insert => Err(std::io::Error::other("todo")),
+            // F(_) => Err(std::io::Error::other("todo")),
+            Char(c) => Err(std::io::Error::other(format!("c: {c:?}"))),
+            // Null => Err(std::io::Error::other("todo")),
+            // Esc => Err(std::io::Error::other("todo")),
+            // CapsLock => Err(std::io::Error::other("todo")),
+            // ScrollLock => Err(std::io::Error::other("todo")),
+            // NumLock => Err(std::io::Error::other("todo")),
+            // PrintScreen => Err(std::io::Error::other("todo")),
+            // Pause => Err(std::io::Error::other("todo")),
+            // Menu => Err(std::io::Error::other("todo")),
+            // KeypadBegin => Err(std::io::Error::other("todo")),
+            // Media(media_key_code) => Err(std::io::Error::other("todo")),
+            // Modifier(modifier_key_code) => Err(std::io::Error::other("todo")),
+            other => Err(std::io::Error::other(format!(
+                "implement key handling for {other:?}"
+            ))),
+        }
     }
 
     fn redraw(&mut self) -> Result<()> {
