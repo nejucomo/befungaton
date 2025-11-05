@@ -1,54 +1,40 @@
+//! An interactive terminal ui
 mod event;
 
-use std::io::{Result, Stdout, Write as _, stdout};
+use std::io::Result;
 
 use crossterm::event::KeyEvent;
-use crossterm::{cursor, style, terminal};
+use derive_new::new;
+use ratatui::DefaultTerminal;
+use ratatui::widgets::Block;
 
 use crate::Space;
-use crate::errors::IOParseError;
 
 use self::event::Event;
 
-/// A Terminal User Interface
-#[derive(Debug)]
-pub struct Tui {
-    space: Space,
-    stdout: Stdout,
+/// Run the interactive tui with the given space
+pub fn run(space: Space) -> Result<()> {
+    let term = ratatui::init();
+    let r = Tui::new(space, term).run();
+    ratatui::restore();
+    r
 }
 
-impl Default for Tui {
-    fn default() -> Self {
-        Self {
-            space: Space::default(),
-            stdout: stdout(),
-        }
-    }
+/// A Terminal User Interface
+#[derive(Debug, new)]
+pub struct Tui {
+    #[allow(dead_code)]
+    space: Space,
+    term: DefaultTerminal,
 }
 
 impl Tui {
-    /// Load the given path into the [Space]
-    pub fn load<P>(&mut self, path: P) -> std::result::Result<(), IOParseError>
-    where
-        P: AsRef<std::path::Path>,
-    {
-        self.space = Space::try_from(path.as_ref())?;
-        Ok(())
-    }
-
-    /// Take control of the terminal and launch the UI.
-    pub fn ui_loop(self) -> Result<()> {
-        in_raw_mode(|| self.raw_ui_loop())
-    }
-
-    fn raw_ui_loop(mut self) -> Result<()> {
+    fn run(mut self) -> Result<()> {
         self.redraw()?;
-        self.stdout.flush()?;
 
         for evres in event::iterator() {
             let ev = evres?;
             self.handle_event(ev)?;
-            self.stdout.flush()?;
         }
         Ok(())
     }
@@ -107,53 +93,47 @@ impl Tui {
     }
 
     fn redraw(&mut self) -> Result<()> {
-        // ╒╕╘╛│═
-        const TITLE: &str = "🤖BEFUNGATON🤖";
-        const TITLE_LEN: u16 = 12; // Character count
+        self.term.draw(|frame| {
+            frame.render_widget(Block::bordered().title("Title Bar"), frame.area());
+        })?;
 
-        let (cols, rows) = terminal::size()?;
+        // // ╒╕╘╛│═
+        // const TITLE: &str = "🤖BEFUNGATON🤖";
+        // const TITLE_LEN: u16 = 12; // Character count
 
-        crossterm::queue!(
-            self.stdout,
-            terminal::Clear(terminal::ClearType::All),
-            style::SetBackgroundColor(style::Color::Black),
-            style::SetForegroundColor(style::Color::Magenta),
-            cursor::MoveTo((cols - TITLE_LEN) / 2, 0),
-            style::Print(TITLE),
-            style::SetBackgroundColor(style::Color::Black),
-            style::SetForegroundColor(style::Color::DarkGrey),
-            cursor::MoveTo(0, 1),
-            style::Print("╒"),
-            cursor::MoveTo(cols - 1, 1),
-            style::Print("╕"),
-            cursor::MoveTo(0, rows - 1),
-            style::Print("╘"),
-            cursor::MoveTo(cols - 1, rows - 1),
-            style::Print("╛"),
-        )?;
+        // let (cols, rows) = terminal::size()?;
 
-        for row in [1, rows - 1] {
-            for col in 1..cols - 1 {
-                crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("═"))?;
-            }
-        }
+        // crossterm::queue!(
+        //     self.stdout,
+        //     terminal::Clear(terminal::ClearType::All),
+        //     style::SetBackgroundColor(style::Color::Black),
+        //     style::SetForegroundColor(style::Color::Magenta),
+        //     cursor::MoveTo((cols - TITLE_LEN) / 2, 0),
+        //     style::Print(TITLE),
+        //     style::SetBackgroundColor(style::Color::Black),
+        //     style::SetForegroundColor(style::Color::DarkGrey),
+        //     cursor::MoveTo(0, 1),
+        //     style::Print("╒"),
+        //     cursor::MoveTo(cols - 1, 1),
+        //     style::Print("╕"),
+        //     cursor::MoveTo(0, rows - 1),
+        //     style::Print("╘"),
+        //     cursor::MoveTo(cols - 1, rows - 1),
+        //     style::Print("╛"),
+        // )?;
 
-        for row in 2..rows - 1 {
-            for col in [0, cols - 1] {
-                crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("│"))?;
-            }
-        }
+        // for row in [1, rows - 1] {
+        //     for col in 1..cols - 1 {
+        //         crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("═"))?;
+        //     }
+        // }
+
+        // for row in 2..rows - 1 {
+        //     for col in [0, cols - 1] {
+        //         crossterm::queue!(self.stdout, cursor::MoveTo(col, row), style::Print("│"))?;
+        //     }
+        // }
 
         Ok(())
     }
-}
-
-fn in_raw_mode<F>(f: F) -> Result<()>
-where
-    F: FnOnce() -> Result<()>,
-{
-    terminal::enable_raw_mode()?;
-    let res = f();
-    terminal::disable_raw_mode()?;
-    res
 }

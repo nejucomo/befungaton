@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use clap::Parser;
 use miette::{IntoDiagnostic as _, Result};
 
-use crate::Tui;
 use crate::errors::IOParseError;
+use crate::{Space, tui};
 
 /// befungaton - a befunge-like interpreter
 #[derive(Debug, Parser)]
@@ -23,8 +23,7 @@ pub fn run() -> Result<()> {
 
 fn run_inner() -> Result<(), IOParseError> {
     let opts = Options::parse();
-    let mut tui = Tui::default();
-    tui.load(opts.source)?;
-    tui.ui_loop()?;
+    let space = Space::try_from(opts.source)?;
+    tui::run(space)?;
     Ok(())
 }

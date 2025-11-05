@@ -9,12 +9,11 @@ pub mod errors;
 pub mod geometry;
 mod glyph;
 mod space;
-mod tui;
+pub mod tui;
 mod widget;
 
 pub use self::cell::{Cell, DEFAULT_CELL, Physical};
 pub use self::cursor::Cursor;
 pub use self::glyph::Glyph;
 pub use self::space::Space;
-pub use self::tui::Tui;
 pub use self::widget::Widget;
