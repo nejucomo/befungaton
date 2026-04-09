@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.49", features = ["derive"] }
-crossterm = "0.29.0"
+eframe = "0.34.1"
 derive_more = { version = "2.0.1", features = ["constructor", "deref", "from", "into"] }
 derive-new = "0.7.0"
 itertools = "0.14.0"
